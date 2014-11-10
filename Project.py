@@ -2,9 +2,7 @@
 # Date: 10/14/14
 # Program to simulate cratering on a theoretical region for
 #   the class ASTR 3750: Planets, Moons, and Rings.
-# Work in progress.
 
-from pylab import *
 from matplotlib.pyplot import *
 import random
 import math;
@@ -23,7 +21,7 @@ class Surface:
     # self.asteroids.append(a)
     # If conflicting crater
     conflicts = self.findConflict(a); # Find all conflicts
-    # If any, remove them all (Not just one)
+    # If any, remove all conflicts (not just one)
     if (conflicts):
       for conflict in conflicts:
         # Remove old crater
@@ -68,8 +66,7 @@ class Surface:
     
     
   def plotAll(self, years, numCraters):
-    newFig = figure();
-    fig = gcf()
+    fig = figure();
     ax = gca()
     ax.cla()
     ax.set_xlim((0,self.sizeX))
@@ -101,25 +98,28 @@ class Asteroid:
     self.location = [impactX, impactY]
     #print("crashed into point: " + str(self.location))
 
-s = Surface();
-numCraterList = [];
-i = 0;
-maxIter = 10000;
-minToEq = 100;
-plotTimes = [1,10,100,250,400];
-yearsPassed = 0;
-while (i < maxIter):
-    yearsPassed=yearsPassed+1000;
-    s.crater(i);
-    numCraterList.append(s.numCraters())
-    pctg = math.fabs(((numCraterList[i] -numCraterList[int(i/2)])/float(numCraterList[i])));
-    
-    if (i+1) in plotTimes:
-        print("plotting");
-        s.plotAll(yearsPassed,numCraterList[i])
+
+if __name__ == "__main__":
+    s = Surface();
+    numCraterList = [];
+    iter = 0;
+    maxIter = 10000;
+    minToEq = 100;
+    plotTimes = [1,10,100,250,400];
+    yearsPassed = 0;
+    eqPctg = .05;
+    while (i < maxIter):
+        yearsPassed=yearsPassed+1000;
+        s.crater(iter);
+        numCraterList.append(s.numCraters())
+        pctg = math.fabs(((numCraterList[iter] - numCraterList[int(iter/2)])/float(numCraterList[iter])));
         
-    if(pctg < .05 and i > minToEq):
-        print("Found Equilibrium at " + str(numCraterList[int(i/2)]) + " craters."); 
-        break;
-    else:
-        i = i + 1;
+        if (iter+1) in plotTimes:
+            print("plotting");
+            s.plotAll(yearsPassed,numCraterList[iter])
+            
+        if(pctg < eqPctg and iter > minToEq):
+            print("Found Equilibrium at " + str(numCraterList[int(iter/2)]) + " craters at " + str(yearsPassed/2) + " years."); 
+            break;
+        else:
+            iter = iter + 1;
