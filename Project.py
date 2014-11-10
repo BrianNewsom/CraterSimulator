@@ -11,8 +11,8 @@ import math;
 
 class Surface:
   def __init__(self):
-    self.sizeX = 200 # Km
-    self.sizeY = 200 # Km
+    self.sizeX = 500 # Km
+    self.sizeY = 500 # Km
     self.age = 0
     self.asteroids = []; # Stores all asteroids that have hit
     self.craters = [];
@@ -22,11 +22,13 @@ class Surface:
     a = Asteroid(id,self.sizeX,self.sizeY)
     # self.asteroids.append(a)
     # If conflicting crater
-    conflict = self.findConflict(a);
-    if (conflict != "false"):
-      # Remove old crater
-      self.craters.remove(conflict)
-      #print("Crater Removed");
+    conflicts = self.findConflict(a); # Find all conflicts
+    # If any, remove them all (Not just one)
+    if (conflicts):
+      for conflict in conflicts:
+        # Remove old crater
+        self.craters.remove(conflict)
+        #print("Crater Removed");
     # Regardless, append new crater
     self.craters.append(a);
     #print("Crater Added");
@@ -44,17 +46,18 @@ class Surface:
       print("Crater " + str(c.id) + " At location " + str(c.location))
 
   def findConflict(self,a):
+    conflicts = [];
     for c in self.craters:
       [ax,ay] = a.location
       [cx,cy] = c.location
       
       # Find out if ax, ay is within a crater
-      if ((ax - cx)**2 + (ay - cy)**2 <= (c.impactDiameter/2)**2):
+      if ((ax - cx)**2 + (ay - cy)**2 < (c.impactDiameter/2)**2):
         # Return conflicting crater
         # print("Conflict found, returning crater");
-        return c
+        conflicts.append(c);
     # Otherwise return false, no conflict found
-    return "false";
+    return conflicts;
        
   def numCraters(self):
     return len(self.craters);
@@ -64,19 +67,26 @@ class Surface:
     plot(x,y,'bo')
     
     
-  def plotAll(self):
+  def plotAll(self, years, numCraters):
+    newFig = figure();
     fig = gcf()
     ax = gca()
     ax.cla()
     ax.set_xlim((0,self.sizeX))
     ax.set_ylim((0,self.sizeY))
+    ax.set_title("Surface after " + str(years) + " years with " + str(numCraters) + " craters")
+    ax.set_xlabel('X Location')
+    ax.set_ylabel('Y Location')
+    
     for c in self.craters:
         (cx,cy) = c.location
-        circle=Circle((cx,cy),c.diameter/2,color='b',fill=False)
-        fig.gca().add_artist(circle)
-        circle2=Circle((cx,cy),1,color='black',fill=False)
-        fig.gca().add_artist(circle2)
-    
+        center=Circle((cx,cy),1,color='black',fill=False)
+        areaObliterated=Circle((cx,cy),c.impactDiameter/2,color='r',fill=False)
+        craterSize=Circle((cx,cy),c.diameter/2,color='b',fill=False)
+        # Add to plots
+        fig.gca().add_artist(center)        
+        fig.gca().add_artist(areaObliterated)
+        fig.gca().add_artist(craterSize)
 
 
 class Asteroid:
@@ -94,21 +104,27 @@ class Asteroid:
 s = Surface();
 numCraterList = [];
 i = 0;
+maxIter = 10000;
+minToEq = 100;
+plotFreq = 100;
 
-while (i < 30000000):
+while (i < maxIter):
     s.crater(i);
     numCraterList.append(s.numCraters())
-    pctg = ((numCraterList[i] -numCraterList[int(i/2)])/float(numCraterList[i]));
-    # print(pctg)
-    if(pctg < .05 and i > 1000):
-        print("Found Equilibrium"); 
-        print(numCraterList[int(i/2)])
+    pctg = math.fabs(((numCraterList[i] -numCraterList[int(i/2)])/float(numCraterList[i])));
+    
+    if (i % plotFreq == 0):
+        print("plotting");
+        s.plotAll(i*1000,numCraterList[i])
+        
+    if(pctg < .05 and i > minToEq):
+        print("Found Equilibrium at " + str(numCraterList[int(i/2)]) + " craters."); 
         break;
     else:
         i = i + 1;
 
     
-s.plotAll();
+
 
 #for i in range(0,1000):
 #    s.crater(i)
