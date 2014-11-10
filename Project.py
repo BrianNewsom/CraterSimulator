@@ -52,7 +52,7 @@ class Surface:
       [cx,cy] = c.location
       
       # Find out if ax, ay is within a crater
-      if ((ax - cx)**2 + (ay - cy)**2 < (c.impactDiameter/2)**2):
+      if ((ax - cx)**2 + (ay - cy)**2 <= (c.impactDiameter/2)**2):
         # Return conflicting crater
         # print("Conflict found, returning crater");
         conflicts.append(c);
@@ -106,27 +106,20 @@ numCraterList = [];
 i = 0;
 maxIter = 10000;
 minToEq = 100;
-plotFreq = 100;
-
+plotTimes = [1,10,100,250,400];
+yearsPassed = 0;
 while (i < maxIter):
+    yearsPassed=yearsPassed+1000;
     s.crater(i);
     numCraterList.append(s.numCraters())
     pctg = math.fabs(((numCraterList[i] -numCraterList[int(i/2)])/float(numCraterList[i])));
     
-    if (i % plotFreq == 0):
+    if (i+1) in plotTimes:
         print("plotting");
-        s.plotAll(i*1000,numCraterList[i])
+        s.plotAll(yearsPassed,numCraterList[i])
         
     if(pctg < .05 and i > minToEq):
         print("Found Equilibrium at " + str(numCraterList[int(i/2)]) + " craters."); 
         break;
     else:
         i = i + 1;
-
-    
-
-
-#for i in range(0,1000):
-#    s.crater(i)
-#print(s.numCraters())
-#s.plotAll()
