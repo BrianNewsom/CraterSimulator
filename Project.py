@@ -65,7 +65,8 @@ class Surface:
     
   def printInfo(self):
     # Print all relevant info for the surface
-    print("Surface size is " + str(self.sizeX) + " km by " + str(self.sizeY) + " km.");
+    print("Surface size is " + str(self.sizeX) + " km by " + str(self.sizeY)+ \
+        " km.");
     print("Surface is " + str(self.age) + " years old.")    
     self.printAsteroids();
     self.printCraters();
@@ -83,15 +84,16 @@ class Surface:
     
     
   def plotAll(self, years, numCraters):
-    # Plot all craters on surface at given time in years and the number of craters
+    # Plot all craters on surface at given time in years and the number of 
+    #   craters
     fig = figure();
     # Setup axes and labels
     ax = gca()
     ax.cla()
     ax.set_xlim((0,self.sizeX))
     ax.set_ylim((0,self.sizeY))
-    ax.set_title("Surface after " + str(years) + " years with " + str(numCraters) + \
-      " craters")
+    ax.set_title("Surface after " + str(years) + " years with " + \
+      str(numCraters) + " craters")
     ax.set_xlabel('X Location')
     ax.set_ylabel('Y Location')
     
@@ -132,7 +134,8 @@ def plotCratersVsTime(numCraterList, timeToEq):
     ax.cla()
     ax.set_xlim((0,time))
     ax.set_ylim((0,max(numCraterList)))
-    ax.set_title("Number of Craters vs. Time (Red Circle Denotes Saturation Equilibrium)")
+    ax.set_title("Number of Craters vs. Time (Red Circle Denotes Saturation \
+      Equilibrium)")
     ax.set_xlabel('Time (In 1000 Years)')
     ax.set_ylabel('Number of Craters On Surface')
     
@@ -169,24 +172,30 @@ if __name__ == "__main__":
     yearsPassed = 0;
     eqPctg = .05;
     print("Running Simulation");
-    # While within reasonable number of iterations (to ensure we don't run forever)
+    # While within reasonable number of iterations (to ensure we don't run
+    #   forever)
     while (iter < maxIter):
         # Allow asteroid to hit planet
         s.crater(iter);
         numCraterList.append(s.numCraters())
         # Determine change in number of craters from half current time
-        pctg = math.fabs(((numCraterList[iter] - numCraterList[int(iter/2)])/float(numCraterList[iter])));
+        pctg = math.fabs(((numCraterList[iter] - numCraterList[int(iter/2)])/ \
+          float(numCraterList[iter])));
         
-        # If we put time in plotTimes, plot the current state of surface for Extra Credit
+        # If we put time in plotTimes, plot the current state of surface for
+        #   Extra Credit
         if (iter+1) in plotTimes:
           s.plotAll(s.age,numCraterList[iter])
            
         # If pctg is less than the desired to reach saturation equilibrium  
         if(pctg < eqPctg and iter > minToEq):
-            print("After " + str(s.age) + " years, the number of craters is only " + \
-              str(numCraterList[iter]) + ", differing from half of the time (" + str(s.age/2) + \
-              " years) by only " + str(pctg*100)[:3] + "%.")
-            print("Found Saturation equilibrium at " + str(numCraterList[int(iter/2)]) + " craters at " + str(int(iter/2)*1000) + " years."); 
+            print("After " + str(s.age) + " years, the number of craters is \
+              only " + str(numCraterList[iter]) + ", differing from half of \
+              the time (" + str(s.age/2) + " years) by only " + \
+              str(pctg*100)[:3] + "%.")
+            print("Found Saturation equilibrium at " + \
+              str(numCraterList[int(iter/2)]) + " craters at " + \
+              str(int(iter/2)*1000) + " years."); 
             plotCratersVsTime(numCraterList,int(iter/2))
             tableCratersVsTime(numCraterList,int(iter/2))
             break;
